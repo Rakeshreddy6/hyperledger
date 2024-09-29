@@ -1,0 +1,92 @@
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: Order erOrg
+    MSPDir: crypto-config/ordererOrganizations/ordererorg
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererOrg.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererOrg.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererOrg.admin')"
+
+  - &Org1
+    Name: Org1
+    ID: Org1
+    MSPDir: crypto-config/peerOrganizations/org1
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Org1.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Org1.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Org1.admin')"
+
+Capabilities:
+  Channel: &ChannelCapabilities
+  Orderer: &OrdererCapabilities
+  Application: &ApplicationCapabilities
+
+Application: &ApplicationDefaults
+  Organizations:
+    - *Org1
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+  Addresses:
+    - orderer:7050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+    - *OrdererOrg
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: "OR('Org1.member')"
+    Writers:
+      Type: Signature
+      Rule: "OR('Org1.member')"
+    Admins:
+      Type: Signature
+      Rule: "OR('Org1.admin')"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  OneOrgOrdererGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *Org1
+  OneOrgChannel:
+    Consortium: SampleConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Org1
+      Capabilities:
+        <<: *ApplicationCapabilities

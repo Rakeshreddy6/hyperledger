@@ -1,0 +1,17 @@
+OrdererOrgs:
+  - Name: OrdererOrg
+    Domain: ordererorg
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+PeerOrgs:
+  - Name: Org1
+    Domain: org1
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
